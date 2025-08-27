@@ -1,0 +1,74 @@
+/* 添加全局样式 */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #f8f9fa;
+  padding: 1rem;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+.hero {
+  text-align: center;
+  padding: 2rem;
+}
+
+.resume-creation {
+  display: flex;
+  justify-content: space-around;
+  padding: 2rem;
+}
+
+.upload-area, .create-area {
+  border: 2px dashed #ccc;
+  padding: 2rem;
+  text-align: center;
+}
+
+.why-choose-us {
+  text-align: center;
+  padding: 2rem;
+}
+
+.feature {
+  display: inline-block;
+  width: 30%;
+  text-align: center;
+}
+
+.template-gallery {
+  text-align: center;
+  padding: 2rem;
+}
+
+.template {
+  display: inline-block;
+  width: 20%;
+  text-align: center;
+}
+
+.user-reviews {
+  text-align: center;
+  padding: 2rem;
+}
+
+.review {
+  display: inline-block;
+  width: 30%;
+  text-align: center;
+}
+
+.call-to-action {
+  background-color: #4a00e0;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
