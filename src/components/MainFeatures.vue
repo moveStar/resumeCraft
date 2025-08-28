@@ -19,21 +19,19 @@ export default {
 
 <style lang="scss" scoped>
 .main-features {
-  margin: 2rem 0;
+  margin: 5rem 0 2rem 0;
   position: relative;
   width: 100%;
   min-height: 300px;
   max-height: 500px;
   height: 40vh;
   background: url('../assets/main_bg.png') no-repeat center center / cover;
+  border-radius: 8px;
   display: flex;
   align-items: stretch;
   justify-content: flex-start;
   box-sizing: border-box;
-
-  // 防止图片抖动或加载闪烁
-  background-size: cover;
-  background-position: center;
+  overflow: hidden; // 防止伪元素溢出圆角
 }
 
 .content-wrapper {
@@ -43,10 +41,12 @@ export default {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center; // 改为居中更稳妥，space-between 在小屏可能拉太开
+  justify-content: center;
   background: linear-gradient(to right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
   border-radius: 8px 0 0 8px;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
 
   h2 {
     font-size: 2.5rem;
@@ -96,6 +96,26 @@ export default {
       }
     }
   }
+
+  // === 关键修改：右侧模糊延伸效果 ===
+  // &::after {
+  //   content: '';
+  //   position: absolute;
+  //   top: 0;
+  //   right: -100px; // 向右延伸
+  //   width: 100px;
+  //   height: 100%;
+  //   background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+  //   box-shadow: 
+  //     0 0 30px 10px rgba(255, 255, 255, 0.4),
+  //     0 0 60px 20px rgba(255, 255, 255, 0.2),
+  //     0 0 100px 40px rgba(255, 255, 255, 0.1);
+  //   pointer-events: none;
+  //   z-index: -1;
+  //   // 可选：模糊增强（需支持 backdrop-filter）
+  //   // backdrop-filter: blur(20px);
+  //   // -webkit-backdrop-filter: blur(20px);
+  // }
 }
 
 // 响应式：中等屏幕 (1200px ~ 1440px)
@@ -132,7 +152,7 @@ export default {
 
   .content-wrapper {
     padding: 1.2rem;
-    width: 55%; /* 稍微增加宽度，避免文字换行 */
+    width: 55%;
   }
 
   .content-wrapper h2 {
@@ -173,9 +193,4 @@ export default {
     padding: 0.8rem 2.2rem;
   }
 }
-
-// 可选：如果页面有最大宽度容器，可限制 content-wrapper 最大宽度
-// .content-wrapper {
-//   max-width: 600px; /* 防止文字行过长影响阅读 */
-// }
 </style>

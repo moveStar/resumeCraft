@@ -39,13 +39,13 @@ export default {
 
 <style scoped>
 .why-choose-us {
+  width: 100%;
   padding: 4rem 1rem;
   background-color: #f8f9fa;
   text-align: center;
 }
 
 .container {
-  max-width: 1200px;
   margin: 0 auto;
 }
 

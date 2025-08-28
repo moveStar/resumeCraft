@@ -66,12 +66,12 @@ export default {
 
 <style scoped>
 .user-reviews {
-  background-color: #f8f9fa;
+  background-color: rgba(79, 70, 229, 0.05);
+  border-radius: 16px;
   padding: 4rem 1rem;
 }
 
 .container {
-  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
 }

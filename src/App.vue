@@ -1,11 +1,14 @@
 <template>
-  <Header />
-  <MainFeatures />
-  <ResumeUploader />
-  <WhyChooseUs />
-  <ResumeTemplates />
-  <UserReviews />
-  <CallToAction />
+  <div class="app-content">
+    <Header />
+    <MainFeatures />
+    <ResumeUploader />
+    <WhyChooseUs />
+    <ResumeTemplates />
+    <UserReviews />
+    <CallToAction />
+  </div>
+  
   <Footer />
 </template>
 
@@ -36,9 +39,9 @@ export default defineComponent({
 
 <style>
 /* 全局样式 */
-body {
+.app-content {
   font-family: Arial, sans-serif;
-  background-color: #f8f9fa;
+  background-color: #F9FAFB;
   margin: 0;
   padding: 0 2rem;
 }

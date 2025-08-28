@@ -68,12 +68,15 @@ export default {
 .footer {
   background-color: #1a1a1a;
   color: #fff;
-  padding: 4rem 1rem;
+  padding: 4rem 0; /* 移除左右内边距，由 container 处理 */
+  width: 100%; /* 明确设置宽度为100% */
+  box-sizing: border-box;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1rem; /* 在 container 上添加左右内边距 */
 }
 
 .footer-content {

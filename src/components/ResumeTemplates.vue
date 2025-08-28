@@ -64,9 +64,19 @@ export default {
           category: '适合工程师和技术人员',
           preview: template4,
         },
+        {
+          name: '高管精英',
+          category: '适合管理层和高级职位',
+          preview: template5,
+        },
+        {
+          name: '技术专业',
+          category: '适合工程师和技术人员',
+          preview: template6,
+        },
         // 更多模板...
       ],
-      maxVisibleTemplates: 4,
+      maxVisibleTemplates: 5,
     };
   },
   computed: {
@@ -96,7 +106,6 @@ export default {
 }
 
 .container {
-  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -116,6 +125,7 @@ export default {
 /* 模板滑动容器 */
 .template-slider {
   display: flex;
+  justify-content: space-between;
   overflow-x: auto;
   scroll-behavior: smooth;
   padding-bottom: 1rem;
@@ -129,8 +139,7 @@ export default {
 
 /* 模板卡片 */
 .template-card {
-  min-width: 280px;
-  max-width: 300px;
+  min-width: 300px;
   margin-right: 1.5rem;
   border-radius: 12px;
   overflow: hidden;

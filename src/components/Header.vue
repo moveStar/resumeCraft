@@ -32,6 +32,7 @@ export default {
   width: 100%;
   z-index: 1000;
   transition: box-shadow 0.3s ease; // 平滑阴影变化
+  margin-bottom: 40px; // 给内容留出空间，防止被遮挡
 
   &:hover {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);

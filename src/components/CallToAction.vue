@@ -27,6 +27,8 @@ export default {
 .call-to-action {
   background-color: #4c7aff;
   padding: 4rem 1rem;
+  border-radius: 16px;
+  margin: 2rem 0;
   text-align: center;
   color: #fff;
 }
