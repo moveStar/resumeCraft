@@ -28,30 +28,37 @@
 </template>
 
 <script>
+import FileParserService from '../services/FileParserService';
+
 export default {
   name: 'ResumeUploader',
+  data() {
+    return {
+      fileParserService: new FileParserService(),
+    };
+  },
   methods: {
     openFilePicker() {
       this.$refs.fileInput.click();
     },
-    handleFileChange(event) {
+    async handleFileChange(event) {
       const file = event.target.files[0];
       if (file) {
         console.log('Selected file:', file);
-        // 处理文件上传逻辑
+        await this.fileParserService.handleFileUpload(file);
       }
     },
-    handleDrop(event) {
+    async handleDrop(event) {
       const files = event.dataTransfer.files;
       if (files.length > 0) {
         const file = files[0];
         console.log('Dropped file:', file);
-        // 处理文件上传逻辑
+        await this.fileParserService.handleFileUpload(file);
       }
     },
     startManualCreation() {
       console.log('开始手动创建简历');
-      // 跳转到手动创建简历页面的逻辑
+      this.$router.push('/editor');
     },
   },
 };
@@ -63,18 +70,43 @@ export default {
   border-radius: 12px;
   padding: 3rem;
   text-align: center;
+  margin: 0 auto;
 }
 
 .upload-section {
   display: flex;
   justify-content: space-between;
   margin-top: 2rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* 响应式：小屏幕设备 (宽度 < 768px) */
+@media (max-width: 768px) {
+  .upload-section {
+    flex-direction: column;
+    align-content: center;
+  }
+
+  .upload-area,
+  .manual-create {
+    width: 100%;
+    margin: 1rem 0;
+  }
+}
+
+/* 响应式：中等屏幕 (768px ~ 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .upload-area,
+  .manual-create {
+    width: 100%;
+  }
 }
 
 .upload-area,
 .manual-create {
-  margin: 0 1rem;
-  width: 48%;
+  margin: 1rem;
+  width: 43%;
   border: 2px dashed #ccc;
   border-radius: 12px;
   padding: 2rem;

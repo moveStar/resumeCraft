@@ -4,17 +4,23 @@
       <h2>3 分钟创建专业简历</h2>
       <p>Ai 驱动的简历优化工具，帮助您从众多求职者中脱颖而出，获得更多面试机会</p>
       <div class="buttons">
-        <button class="start-btn">立即开始</button>
-        <button class="view-templates-btn">查看模板</button>
+        <router-link to="/editor" class="start-btn">立即开始</router-link>
+        <router-link to="/templates" class="view-templates-btn">查看模板</router-link>
       </div>
     </div>
   </section>
 </template>
 
 <script lang="ts">
-export default {
-  name: 'MainFeatures'
-};
+import { defineComponent } from 'vue';
+import { RouterLink } from 'vue-router';
+
+export default defineComponent({
+  name: 'MainFeatures',
+  components: {
+    RouterLink
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -35,16 +41,16 @@ export default {
 }
 
 .content-wrapper {
-  width: 50%;
+  width: 45%;
   height: 100%;
-  padding: 2rem;
+  padding: 3rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.5));
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
   border-radius: 8px 0 0 8px;
-  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
   position: relative;
   z-index: 1;
 
@@ -80,6 +86,7 @@ export default {
     .start-btn {
       background-color: #4c7aff;
       color: #fff;
+      text-decoration: none;
       &:hover {
         background-color: #3b69ff;
         transform: translateY(-1px);
@@ -90,32 +97,13 @@ export default {
       background-color: transparent;
       color: #4c7aff;
       border: 2px solid #4c7aff;
+      text-decoration: none;
       &:hover {
         background-color: #eef2ff;
         transform: translateY(-1px);
       }
     }
   }
-
-  // === 关键修改：右侧模糊延伸效果 ===
-  // &::after {
-  //   content: '';
-  //   position: absolute;
-  //   top: 0;
-  //   right: -100px; // 向右延伸
-  //   width: 100px;
-  //   height: 100%;
-  //   background: linear-gradient(to right, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
-  //   box-shadow: 
-  //     0 0 30px 10px rgba(255, 255, 255, 0.4),
-  //     0 0 60px 20px rgba(255, 255, 255, 0.2),
-  //     0 0 100px 40px rgba(255, 255, 255, 0.1);
-  //   pointer-events: none;
-  //   z-index: -1;
-  //   // 可选：模糊增强（需支持 backdrop-filter）
-  //   // backdrop-filter: blur(20px);
-  //   // -webkit-backdrop-filter: blur(20px);
-  // }
 }
 
 // 响应式：中等屏幕 (1200px ~ 1440px)
@@ -177,10 +165,10 @@ export default {
   }
 }
 
-// 响应式：超大屏幕 (>= 1920px)
-@media (min-width: 1920px) {
+// 响应式：大屏幕 (>= 1600px)
+@media (min-width: 1600px) {
   .content-wrapper h2 {
-    font-size: 3rem;
+    font-size: 2.8rem;
   }
 
   .content-wrapper p {
@@ -189,8 +177,42 @@ export default {
 
   .content-wrapper .start-btn,
   .content-wrapper .view-templates-btn {
+    padding: 0.85rem 2.2rem;
     font-size: 1.1rem;
-    padding: 0.8rem 2.2rem;
+  }
+}
+
+// 响应式：超大屏幕 (>= 1920px)
+@media (min-width: 1920px) {
+  .content-wrapper h2 {
+    font-size: 3.2rem;
+  }
+
+  .content-wrapper p {
+    font-size: 1.4rem;
+  }
+
+  .content-wrapper .start-btn,
+  .content-wrapper .view-templates-btn {
+    padding: 0.95rem 2.5rem;
+    font-size: 1.2rem;
+  }
+}
+
+// 响应式：超大屏幕 (>= 1920px)
+@media (min-width: 1920px) {
+  .content-wrapper h2 {
+    font-size: 3.2rem;
+  }
+
+  .content-wrapper p {
+    font-size: 1.4rem;
+  }
+
+  .content-wrapper .start-btn,
+  .content-wrapper .view-templates-btn {
+    padding: 0.95rem 2.5rem;
+    font-size: 1.2rem;
   }
 }
 </style>

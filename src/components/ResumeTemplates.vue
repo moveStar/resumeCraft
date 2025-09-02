@@ -92,7 +92,7 @@ export default {
       console.log('预览模板:', template.name);
     },
     showAllTemplates() {
-      this.maxVisibleTemplates = this.templates.length;
+      this.$router.push({ name: 'templates' });
     },
   },
 };

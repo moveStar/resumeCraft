@@ -34,8 +34,11 @@ export default {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1600px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .call-to-action h2 {

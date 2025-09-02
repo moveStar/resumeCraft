@@ -11,17 +11,6 @@
           </p>
         </div>
 
-        <!-- 产品相关链接 -->
-        <div class="footer-section">
-          <h3>产品</h3>
-          <ul>
-            <li><a href="#">功能</a></li>
-            <li><a href="#">模板</a></li>
-            <li><a href="#">定价</a></li>
-            <li><a href="#">常见问题</a></li>
-          </ul>
-        </div>
-
         <!-- 公司相关链接 -->
         <div class="footer-section">
           <h3>公司</h3>
@@ -74,26 +63,31 @@ export default {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1600px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
-  padding: 0 1rem; /* 在 container 上添加左右内边距 */
+  padding: 0 2rem;
 }
 
 .footer-content {
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 2rem;
+  padding-bottom: 3rem;
   margin-bottom: 2rem;
+  gap: 4rem;
 }
 
 .footer-section {
   flex: 1;
+  min-width: 200px;
 }
 
 .footer-section h3 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+  font-size: 1.35rem;
+  margin-bottom: 1.2rem;
+  font-weight: 600;
 }
 
 .footer-section ul {
@@ -132,6 +126,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: 1.5rem;
 }
 
 .footer-bottom p,

@@ -1,12 +1,11 @@
 <template>
   <header class="header">
     <nav class="nav-container">
-      <a href="#" class="logo">简历转化器</a>
+      <router-link to="/" class="logo">简历转化器</router-link>
       <ul class="nav-links">
-        <li><a href="#">首页</a></li>
-        <li><a href="#">模板库</a></li>
-        <li><a href="#">使用教程</a></li>
-        <li><a href="#">定价</a></li>
+        <li><router-link to="/">首页</router-link></li>
+        <li><router-link to="/templates">模板库</router-link></li>
+        <li><router-link to="/tutorials">使用教程</router-link></li>
       </ul>
       <div class="actions">
         <a href="#" class="login-link">登录</a>
@@ -80,6 +79,21 @@ export default {
     &:hover {
       color: #4c7aff;
       transform: translateY(-1px);
+    }
+
+    &.router-link-active {
+      color: #4c7aff;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #4c7aff;
+      }
     }
   }
 }

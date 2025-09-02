@@ -1,12 +1,13 @@
+<!--
+ * @Description: 
+ * @Author: zhangweijuan
+ * @Date: 2025-08-27 10:19:06
+ * @LastEditTime: 2025-09-02 09:57:14
+-->
 <template>
   <div class="app-content">
     <Header />
-    <MainFeatures />
-    <ResumeUploader />
-    <WhyChooseUs />
-    <ResumeTemplates />
-    <UserReviews />
-    <CallToAction />
+    <router-view />
   </div>
   
   <Footer />
@@ -15,23 +16,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import Header from './components/Header.vue';
-import MainFeatures from './components/MainFeatures.vue';
-import ResumeUploader from './components/ResumeUploader.vue';
-import WhyChooseUs from './components/WhyChooseUs.vue';
-import ResumeTemplates from './components/ResumeTemplates.vue';
-import UserReviews from './components/UserReviews.vue';
-import CallToAction from './components/CallToAction.vue';
 import Footer from './components/Footer.vue';
 
 export default defineComponent({
   components: {
     Header,
-    MainFeatures,
-    ResumeUploader,
-    WhyChooseUs,
-    ResumeTemplates,
-    UserReviews,
-    CallToAction,
     Footer
   }
 });
