@@ -39,7 +39,7 @@ export default {
           name: '张雨薇',
           position: '市场经理 @ 腾讯',
           description:
-            '使用FressResumeAI后，我的面试邀请增加了60%。AI优化功能帮我突出了最相关的经验，让我的简历在众多申请者中脱颖而出。',
+            '使用AIResumeCraft后，我的面试邀请增加了60%。AI优化功能帮我突出了最相关的经验，让我的简历在众多申请者中脱颖而出。',
           rating: 5,
         },
         {

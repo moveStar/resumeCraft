@@ -3,8 +3,7 @@
     <header class="editor-header">
       <h1>编辑您的简历</h1>
       <div class="header-actions">
-        <button class="preview-btn" @click="previewResume">预览简历</button>
-        <button class="save-btn" @click="saveResume">保存更改</button>
+        <button class="save-btn" @click="saveResume">保存并预览</button>
       </div>
     </header>
 
@@ -450,7 +449,8 @@ export default {
       localStorage.setItem('resumeData', JSON.stringify(this.resumeData));
       // 向父组件发射事件，传递简历数据
       this.$emit('saveResume', this.resumeData);
-      alert('简历保存成功！');
+      // 跳转到预览页面
+      this.$router.push({ name: 'preview', query: { resumeData: JSON.stringify(this.resumeData) } });
     },
 
     // 教育背景相关方法
@@ -550,7 +550,8 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f5f7fa;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf5 100%);
+  background-attachment: fixed;
 }
 
 .editor-header {
@@ -558,14 +559,17 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(90deg, #4c7aff 0%, #36cbcb 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 10;
+  border-radius: 0 0 12px 12px;
 }
 
 .editor-header h1 {
   font-size: 1.5rem;
-  color: #333;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .header-actions {
@@ -573,23 +577,22 @@ export default {
   gap: 1rem;
 }
 
-.preview-btn, .save-btn {
-  padding: 0.5rem 1rem;
+.save-btn {
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
-}
-
-.preview-btn {
   background-color: #fff;
   color: #4c7aff;
-  border: 1px solid #4c7aff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.save-btn {
-  background-color: #4c7aff;
-  color: #fff;
+.save-btn:hover {
+  background-color: #f0f7ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .editor-content {
