@@ -32,6 +32,7 @@
             <div class="form-group">
               <label>姓名</label>
               <input v-model="resumeData.name" type="text" placeholder="请输入您的姓名" />
+              <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
             </div>
             <div class="form-row">
               <div class="form-group">
@@ -50,10 +51,12 @@
             <div class="form-group">
               <label>手机号码</label>
               <input v-model="resumeData.phone" type="tel" placeholder="请输入您的手机号码" />
+              <span v-if="errors.phone" class="error-message">{{ errors.phone }}</span>
             </div>
             <div class="form-group">
               <label>邮箱</label>
               <input v-model="resumeData.email" type="email" placeholder="请输入您的邮箱地址" />
+              <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
             </div>
             <div class="form-group">
               <label>居住城市</label>
@@ -254,17 +257,75 @@
 </template>
 
 <script lang="ts">
+// 定义简历数据接口
+interface ResumeData {
+  name: string;
+  gender: string;
+  birthDate: string;
+  phone: string;
+  email: string;
+  location: string;
+  summary: string;
+  education: Array<{
+    school: string;
+    major: string;
+    startDate: string;
+    endDate: string;
+    degree: string;
+    description: string;
+  }>;
+  workExperience: Array<{
+    company: string;
+    position: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+  }>;
+  projects: Array<{
+    name: string;
+    role: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+    contribution: string;
+    techStack: string;
+  }>;
+  skills: Array<{
+    name: string;
+    level: string;
+  }>;
+  certifications: Array<{
+    name: string;
+    issuer: string;
+    date: string;
+    description: string;
+  }>;
+}
+
+// 定义错误信息接口
+interface Errors {
+  name?: string;
+  phone?: string;
+  email?: string;
+}
+
 export default {
   name: 'ResumeEditor',
   props: {
     initialData: {
-      type: Object,
+      type: Object as () => Partial<ResumeData>,
       default: () => ({})
     }
   },
-  data() {
+
+  data(): {
+    activeSection: string;
+    sections: Array<{ id: string; title: string; }>;
+    resumeData: ResumeData;
+    errors: Errors;
+  } {
     // 如果提供了initialData，则使用它初始化resumeData
-    const initialResumeData = this.initialData || {
+    const defaultResumeData: ResumeData = {
       name: '',
       gender: '',
       birthDate: '',
@@ -317,6 +378,9 @@ export default {
         },
       ],
     };
+    
+    // 合并initialData和默认值，并进行类型断言
+    const initialResumeData = { ...defaultResumeData, ...this.initialData } as ResumeData;
 
     return {
       activeSection: 'basic-info',
@@ -329,9 +393,41 @@ export default {
         { id: 'certifications', title: '证书资质' },
       ],
       resumeData: initialResumeData,
+      errors: {}, // 用于存储表单错误信息
     };
   },
   methods: {
+    // 表单验证方法
+    validateForm(): boolean {
+      const errors: Errors = {};
+      // 从this.resumeData中解构字段，由于data中已经初始化，不需要额外空检查
+      const { name, phone, email } = this.resumeData;
+
+      // 验证姓名
+      if (!name.trim()) {
+        errors.name = '姓名不能为空';
+      }
+
+      // 验证手机号码
+      const phoneRegex = /^1[3-9]\d{9}$/;
+      if (!phone) {
+        errors.phone = '手机号码不能为空';
+      } else if (!phoneRegex.test(phone)) {
+        errors.phone = '请输入有效的手机号码';
+      }
+
+      // 验证邮箱
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!email) {
+        errors.email = '邮箱不能为空';
+      } else if (!emailRegex.test(email)) {
+        errors.email = '请输入有效的邮箱地址';
+      }
+
+      this.errors = errors;
+      return Object.keys(errors).length === 0;
+    },
+
     // 基本信息相关方法
     previewResume() {
       // 跳转到预览页面的逻辑
@@ -341,12 +437,20 @@ export default {
     },
     
     saveResume() {
+      // 先验证表单
+      if (!this.validateForm()) {
+        // 如果验证失败，切换到基本信息标签
+        this.activeSection = 'basic-info';
+        return;
+      }
+
       // 保存简历的逻辑
       console.log('保存简历:', this.resumeData);
       // 可以将数据保存到localStorage或发送到服务器
       localStorage.setItem('resumeData', JSON.stringify(this.resumeData));
       // 向父组件发射事件，传递简历数据
       this.$emit('saveResume', this.resumeData);
+      alert('简历保存成功！');
     },
 
     // 教育背景相关方法
@@ -360,7 +464,7 @@ export default {
         description: '',
       });
     },
-    removeEducation(index) {
+    removeEducation(index: number) {
       if (this.resumeData.education.length > 1) {
         this.resumeData.education.splice(index, 1);
       } else {
@@ -378,7 +482,7 @@ export default {
         description: '',
       });
     },
-    removeWorkExperience(index) {
+    removeWorkExperience(index: number) {
       if (this.resumeData.workExperience.length > 1) {
         this.resumeData.workExperience.splice(index, 1);
       } else {
@@ -398,7 +502,7 @@ export default {
         techStack: '',
       });
     },
-    removeProject(index) {
+    removeProject(index: number) {
       if (this.resumeData.projects.length > 1) {
         this.resumeData.projects.splice(index, 1);
       } else {
@@ -413,7 +517,7 @@ export default {
         level: '',
       });
     },
-    removeSkill(index) {
+    removeSkill(index: number) {
       if (this.resumeData.skills.length > 1) {
         this.resumeData.skills.splice(index, 1);
       } else {
@@ -430,7 +534,7 @@ export default {
         description: '',
       });
     },
-    removeCertification(index) {
+    removeCertification(index: number) {
       if (this.resumeData.certifications.length > 1) {
         this.resumeData.certifications.splice(index, 1);
       } else {
@@ -589,6 +693,12 @@ input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: #4c7aff;
   box-shadow: 0 0 0 2px rgba(76, 122, 255, 0.1);
+}
+
+.error-message {
+  color: #ff4d4f;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
 }
 
 textarea {
