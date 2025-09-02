@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <nav class="nav-container">
-      <router-link to="/" class="logo">简历转化器</router-link>
+      <router-link to="/" class="logo">FressResumeAI</router-link>
       <ul class="nav-links">
         <li><router-link to="/">首页</router-link></li>
         <li><router-link to="/templates">模板库</router-link></li>

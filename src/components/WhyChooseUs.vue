@@ -2,7 +2,7 @@
 <template>
   <section class="why-choose-us">
     <div class="container">
-      <h2>为什么选择我们的简历转化器</h2>
+      <h2>为什么选择我们的FressResumeAI</h2>
       <p>专为求职者设计的智能工具，帮助您轻松创建专业简历</p>
 
       <div class="features">

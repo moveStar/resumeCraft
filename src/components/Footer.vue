@@ -3,9 +3,9 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
-        <!-- 简历转化器介绍 -->
+        <!-- FressResumeAI介绍 -->
         <div class="footer-section">
-          <h3>简历转化器</h3>
+          <h3>FressResumeAI</h3>
           <p>
             帮助求职者创建专业简历，获得更多面试机会的智能工具
           </p>
@@ -36,7 +36,7 @@
 
       <!-- 版权和法律条款 -->
       <div class="footer-bottom">
-        <p>© 2023 简历转化器. 保留所有权利.</p>
+        <p>© 2023 FressResumeAI. 保留所有权利.</p>
         <ul class="legal-links">
           <li><a href="#">隐私政策</a></li>
           <li><a href="#">服务条款</a></li>
