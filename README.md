@@ -1,35 +1,28 @@
-<p style="display:flex; justify-content: center">
-
-</p>
-<p align="center">
-  <a href="https://tdesign.tencent.com/vue-next/overview" target="_blank">
-   <img alt="TDesign Logo" width="200" src="./public/tdesign-logo.svg"/>
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://nodejs.org/en/about/releases/"><img src="https://img.shields.io/node/v/vite.svg" alt="node compatility"></a>
-  <a href="https://github.com/Tencent/tdesign-react-starter/blob/develop/LICENSE">
-    <img src="https://img.shields.io/npm/l/tdesign-react.svg?sanitize=true" alt="License">
-  </a>
-</p>
+<p style="display:flex; justify-content: center" style="font-size: 48px">基于AI的简历生成工具</p>
 
 ## 项目简介
 
-`tdesign-vue-next` 是一个 TDesign 适配桌面端的组件库，适合在 vue3.x 技术栈项目中使用。
+基于`tdesign-vue-next` 组件库的简历生成工具，通过用户输入信息，自动生成简历。
 
 ## 开发
+````bash
+node 22.18.0
+vue 3.4.21
+typescript 5.4.4
+vite 5.2.8
+sass 1.91.0
+````
 
 ### 安装依赖
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 启动项目
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## 构建
@@ -39,7 +32,3 @@ npm run dev
 ```bash
 npm run build
 ```
-
-## 开源协议
-
-TDesign 遵循 [MIT 协议](https://github.com/Tencent/tdesign-starter-cli/blob/develop/LICENSE)。
