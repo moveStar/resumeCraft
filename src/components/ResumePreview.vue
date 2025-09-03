@@ -6,18 +6,19 @@
       <!-- 左侧简历预览 -->
       <div class="resume-display">
         <div class="preview-tabs">
-          <button class="active">优化版本</button>
-          <button>原始版本</button>
+          <!-- <button class="active">优化版本</button>
+          <button>原始版本</button> -->
+          <button class="active">预览</button>
         </div>
 
-        <div class="resume-paper">
+        <div class="resume-paper" :style="{ padding: margin + 'px', fontSize: fontSize === 'small' ? '14px' : fontSize === 'large' ? '20px' : '16px' }">
           <!-- 个人信息 -->
           <div class="personal-info">
             <div class="avatar-container">
               <img :src="resumeData.avatar || defaultAvatar" alt="个人头像" class="avatar" />
             </div>
             <h1>{{ resumeData.name }}</h1>
-            <div class="professional-title">{{ resumeData.title }}</div>
+            <!-- <div class="professional-title">{{ resumeData.title }}</div> -->
             <div class="contact-details">
               <div class="contact-item">
                 <i class="icon-phone"></i>
@@ -31,10 +32,10 @@
                 <i class="icon-location"></i>
                 <span>{{ resumeData.location }}</span>
               </div>
-              <div class="contact-item" v-if="resumeData.website">
+              <!-- <div class="contact-item" v-if="resumeData.website">
                 <i class="icon-website"></i>
                 <a :href="resumeData.website" target="_blank">{{ resumeData.website }}</a>
-              </div>
+              </div> -->
             </div>
           </div>
 
@@ -45,7 +46,7 @@
           </div>
 
           <!-- 工作经历 -->
-          <div class="section">
+          <div class="section" v-if="resumeData.workExperience && resumeData.workExperience.length > 0">
             <h2>工作经历</h2>
             <div class="timeline">
               <div v-for="(exp, index) in resumeData.workExperience" :key="index" class="timeline-item">
@@ -59,7 +60,7 @@
                       <h3>{{ exp.position }}</h3>
                       <div class="company-name">{{ exp.company }}</div>
                     </div>
-                    <span class="exp-duration">{{ exp.duration }}</span>
+                    <span class="exp-duration">{{ formatDate(exp.duration) }}</span>
                   </div>
                   <ul class="exp-details">
                     <li v-for="(desc, i) in exp.descriptions" :key="i">{{ desc }}</li>
@@ -76,7 +77,7 @@
               <div v-for="(project, index) in resumeData.projects" :key="index" class="project-card">
                 <div class="project-header">
                   <h3>{{ project.name }}</h3>
-                  <span>{{ project.duration }}</span>
+                  <span>{{ formatDate(project.duration) }}</span>
                 </div>
                 <div class="project-role">{{ project.role }}</div>
                 <p class="project-description">{{ project.description }}</p>
@@ -99,7 +100,7 @@
             <div v-for="(edu, index) in resumeData.education" :key="index" class="education-item">
               <div class="edu-header">
                 <h3>{{ edu.degree }} | {{ edu.school }}</h3>
-                <span>{{ edu.duration }}</span>
+                <span>{{ edu.startDate }} - {{ edu.endDate }}</span>
               </div>
               <p>{{ edu.description }}</p>
             </div>
@@ -109,13 +110,13 @@
           <div class="section" v-if="resumeData.skills && resumeData.skills.length > 0">
             <h2>技能特长</h2>
             <div class="skills-tag-cloud">
-              <div v-for="(skillGroup, groupIndex) in resumeData.skills" :key="groupIndex" class="tag-group">
-                <h3 class="skill-group-title">{{ skillGroup.category }}</h3>
-                <div class="tag-container">
-                  <span v-for="(skill, index) in skillGroup.skills" :key="index" 
-                        :style="{ fontSize: Math.max(14, 14 + (skill.level - 50) / 10) + 'px', backgroundColor: getSkillColor(groupIndex) + '20' }"
-                        class="skill-tag" 
-                        :title="skill.name + ' - ' + skill.level + '%'">{{ skill.name }}</span>
+              <div class="tag-container">
+                <div v-for="(skill, index) in resumeData.skills" :key="index" 
+                     class="skill-tag" 
+                     :style="{ backgroundColor: getSkillColor(skill.level), fontSize: getSkillFontSize(skill.level) }"
+                     @mouseenter="onSkillHover(skill.name, true)"
+                     @mouseleave="onSkillHover(skill.name, false)">
+                  {{ skill.name }} <span class="skill-tag-level">({{ getSkillLevelText(skill.level) }})</span>
                 </div>
               </div>
             </div>
@@ -133,7 +134,7 @@
                   <h3>{{ cert.name }}</h3>
                 </div>
                 <div class="certificate-issuer">{{ cert.issuer }}</div>
-                <div class="certificate-date">{{ cert.date }}</div>
+                <div class="certificate-date">{{ formatDate(cert.date) }}</div>
                 <p class="certificate-description">{{ cert.description }}</p>
               </div>
             </div>
@@ -149,26 +150,27 @@
       <div class="control-panel">
         <div class="action-buttons">
           <button class="primary-btn">导出PDF</button>
-          <button class="secondary-btn">分享</button>
+          <button class="secondary-btn" v-if="false">分享</button>
         </div>
 
         <div class="export-settings">
           <h3>导出设置</h3>
           <div class="setting-item">
             <label>导出格式</label>
-            <select>
-              <option>PDF (.pdf)</option>
+            <select v-model="exportFormat">
+              <option value="pdf">PDF (.pdf)</option>
+              <option value="html">HTML (.html)</option>
             </select>
           </div>
 
           <div class="setting-item">
             <label>文件名</label>
-            <input type="text" :value="fileName" readonly />
+            <input type="text" v-model="exportFileName" />
           </div>
 
           <div class="setting-item">
-            <label>页边距</label>
-            <input type="range" min="0" max="50" value="15" />
+            <label>页边距 ({{ margin }}px)</label>
+            <input type="range" min="25" max="50" v-model="margin" @input="handleMarginChange" />
             <div class="range-values">
               <span>窄</span>
               <span>适中</span>
@@ -179,16 +181,16 @@
           <div class="setting-item">
             <label>字体大小</label>
             <div class="font-size-buttons">
-              <button>小</button>
-              <button class="active">中</button>
-              <button>大</button>
+              <button :class="{ 'active': fontSize === 'small' }" @click="handleFontSizeChange('small')">小</button>
+              <button :class="{ 'active': fontSize === 'medium' }" @click="handleFontSizeChange('medium')">中</button>
+              <button :class="{ 'active': fontSize === 'large' }" @click="handleFontSizeChange('large')">大</button>
             </div>
           </div>
 
-          <button class="export-btn">立即导出</button>
+          <button class="export-btn" @click="handleExport">立即导出</button>
         </div>
 
-        <div class="share-section">
+        <div class="share-section" v-if="false">
           <h3>分享简历</h3>
           <div class="setting-item">
             <label>有效期</label>
@@ -279,17 +281,125 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+// 声明全局变量html2pdf
+declare global {
+  interface Window {
+    html2pdf: any;
+  }
+}
+import { ref, computed, defineProps, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 
-// 技能颜色生成函数
-const getSkillColor = (index: number) => {
-  const colors = ['#4e6ef2', '#36cbcb', '#f7ba1e', '#ff7d00', '#722ed1'];
-  return colors[index % colors.length];
+// 定义组件 props
+const props = defineProps({
+  resumeData: {
+    type: Object,
+    default: () => null
+  }
+});
+
+// 获取路由参数
+const route = useRoute();
+let resumeDataFromRoute = ref(null);
+
+// 从路由参数中解析简历数据
+onMounted(() => {
+  if (route.query.resumeData) {
+    try {
+      resumeDataFromRoute.value = JSON.parse(decodeURIComponent(route.query.resumeData as string));
+      // 更新简历数据
+      resumeData.value = resumeDataFromRoute.value;
+    } catch (error) {
+      console.error('解析路由参数中的简历数据失败:', error);
+    }
+  }
+});
+
+// 技能颜色生成函数，适配1-4等级系统
+const getSkillColor = (level: number) => {
+  if (level === 4) return '#D57DF0'; // 蓝色 - 精通
+  if (level === 3) return '#7DD2F0'; // 青色 - 熟练
+  if (level === 2) return '#F09B7D'; // 黄色 - 掌握
+  if (level === 1) return '#98F07D'; // 橙色 - 了解
+  return '#722ed1'; // 紫色 - 入门
 };
+
+// 技能文本描述函数，将等级转换为文字
+const getSkillLevelText = (level: number) => {
+  if (level === 4) return '精通';
+  if (level === 3) return '熟练';
+  if (level === 2) return '掌握';
+  if (level === 1) return '了解';
+  return '入门';
+};
+
+// 技能字体大小函数，根据等级调整字体大小
+const getSkillFontSize = (level: number) => {
+  if (level === 4) return '16px'; // 精通 - 最大
+  if (level === 3) return '15px'; // 熟练 - 中等
+  if (level === 2) return '14px'; // 掌握 - 较小
+  if (level === 1) return '13px'; // 了解 - 最小
+  return '12px'; // 入门 - 最小
+};
+
+// 技能悬停效果处理函数
+const onSkillHover = (skillName: string, isHovered: boolean) => {
+  if (isHovered) {
+    // 可以添加悬停时的效果，如放大、高亮等
+    // 这里我们只是打印到控制台
+    console.log(`Hovered over skill: ${skillName}`);
+  } else {
+    console.log(`Left skill: ${skillName}`);
+  }
+};
+
+// 日期格式化函数，确保所有时间显示格式一致
+const formatDate = (dateString: string) => {
+  // 检查是否为空
+  if (!dateString) return '';
+  
+  // 检查是否已经是"YYYY.MM - YYYY.MM"或"YYYY.MM - 至今"格式
+  if (/^\d{4}\.\d{2} - (\d{4}\.\d{2}|至今)$/.test(dateString)) {
+    return dateString;
+  }
+  
+  // 检查是否是"YYYY-MM"格式
+  if (/^\d{4}-\d{2}$/.test(dateString)) {
+    return dateString.replace('-', '.');
+  }
+  
+  // 检查是否是"YYYY-MM - YYYY-MM"格式
+  if (/^\d{4}-\d{2} - \d{4}-\d{2}$/.test(dateString)) {
+    return dateString.replace(/-/g, '.');
+  }
+  
+  // 对于其他格式，尝试转换为"YYYY.MM"格式
+  try {
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+    }
+  } catch (error) {
+    console.error('日期格式化失败:', error);
+  }
+  
+  // 如果所有尝试都失败，返回原始字符串
+  return dateString;
+};
+
 const defaultAvatar = ref('/src/assets/images/default-avatar.png');
 
-// 模拟简历数据，实际应用中应该从父组件或API获取
-const resumeData = ref({
+// 导出设置状态
+const exportFormat = ref('pdf');
+const margin = ref(50);
+const fontSize = ref('medium');
+const exportFileName = ref('');
+
+// 初始化简历数据
+const resumeData = ref<Record<string, any> | null>(props.resumeData || null);
+
+// 默认简历数据，如果没有从父组件或路由传入则使用
+const defaultResumeData = {
   name: '张明远',
   title: '高级全栈开发工程师',
   avatar: '',
@@ -302,7 +412,6 @@ const resumeData = ref({
     {
       position: '高级前端工程师',
       company: '上海科技有限公司',
-      logo: 'https://via.placeholder.com/40',
       duration: '2020.07 - 至今',
       descriptions: [
         '负责公司核心产品用户增长系统的前端架构设计，使用React Hooks重构代码，性能提升40%',
@@ -313,7 +422,6 @@ const resumeData = ref({
     {
       position: '前端开发工程师',
       company: '北京互联网有限公司',
-      logo: 'https://via.placeholder.com/40',
       duration: '2018.06 - 2020.06',
       descriptions: [
         '参与电商平台前端开发，负责商品详情页和购物车模块',
@@ -350,67 +458,211 @@ const resumeData = ref({
   ],
   education: [
     {
-      degree: '计算机科学与技术',
-      school: '复旦大学',
-      duration: '2014.09 - 2018.06',
-      description: 'GPA: 3.74/4.0 | 校级优秀毕业生'
+      "school": "北京师范大学",
+      "major": "汉语言文学",
+      "degree": "bachelor",
+      "startDate": "2022-09",
+      "endDate": "2025-06",
+      "description": "GPA4.5"
     }
   ],
   skills: [
-    {
-      category: '前端技术',
-      skills: [
-        { name: 'React', level: 90 },
-        { name: 'Vue', level: 85 },
-        { name: 'TypeScript', level: 88 },
-        { name: 'HTML/CSS', level: 95 }
-      ]
-    },
-    {
-      category: '后端技术',
-      skills: [
-        { name: 'Node.js', level: 80 },
-        { name: 'Express', level: 75 },
-        { name: 'MongoDB', level: 70 }
-      ]
-    },
-    {
-      category: '其他技能',
-      skills: [
-        { name: 'Webpack', level: 85 },
-        { name: '性能优化', level: 88 },
-        { name: '团队管理', level: 75 }
-      ]
-    }
-  ],
+    { name: 'React', level: 1 },
+    { name: 'Vue', level: 3 },
+    { name: 'TypeScript', level: 2 },
+    { name: 'HTML/CSS', level: 4 }
+        ],
   certifications: [
     {
       name: 'AWS认证解决方案架构师',
-      logo: 'https://via.placeholder.com/40',
       issuer: '亚马逊AWS',
       date: '2022年6月',
       description: '验证了在设计和部署AWS云基础设施方面的专业知识和技能。'
     },
     {
       name: 'React高级开发者认证',
-      logo: 'https://via.placeholder.com/40',
       issuer: 'React官方',
       date: '2021年3月',
       description: '验证了在React应用开发和优化方面的高级技能。'
     }
   ],
   lastUpdated: '2023-11-15 14:30'
-});
+};
+
+// 使用传入的数据或默认数据
+// 保持默认数据结构，确保即使没有传入数据也能正常显示
+if (!resumeData.value) {
+  resumeData.value = defaultResumeData as Record<string, any>;
+}
+console.log('-------------', resumeData.value);
 
 // 计算文件名
 const fileName = computed(() => {
+  if (!resumeData.value || !resumeData.value.name || !resumeData.value.title) {
+    return `resume_${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}`;
+  }
   return `${resumeData.value.name}_${resumeData.value.title}_${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}`;
 });
+
+// 监听fileName变化，同步到exportFileName
+watch(fileName, (newValue) => {
+  exportFileName.value = newValue;
+});
+
+// 页边距变化处理
+const handleMarginChange = (event: Event) => {
+  margin.value = parseInt((event.target as HTMLInputElement).value);
+  // 可以在这里添加额外的逻辑，如果需要
+};
+
+// 字体大小变化处理
+const handleFontSizeChange = (size: 'small' | 'medium' | 'large') => {
+  fontSize.value = size;
+  // 可以在这里添加额外的逻辑，如果需要
+};
+
+// 导出功能实现
+const handleExport = () => {
+  console.log('导出设置:', {
+    format: exportFormat.value,
+    fileName: exportFileName.value,
+    margin: margin.value,
+    fontSize: fontSize.value
+  });
+
+  // 根据选择的格式执行不同的导出操作
+  if (exportFormat.value === 'pdf') {
+    // 创建打印专用样式（作为备选方案）
+    const printStyle = document.createElement('style');
+    printStyle.id = 'print-style';
+    printStyle.textContent = `
+      @media print {
+        /* 重置所有元素样式 */
+        * { 
+          all: initial !important;
+          box-sizing: border-box !important;
+          font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+        }
+        
+        /* 确保body可见并设置基础样式 */
+        body { 
+          display: block !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background-color: white !important;
+          color: black !important;
+        }
+        
+        /* 隐藏非主要内容 */
+        body > *:not(.main-content) { display: none !important; }
+        
+        /* 确保.main-content可见 */
+        .main-content { 
+          display: block !important;
+          position: static !important;
+          width: 100% !important;
+          height: auto !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        
+        /* 简历纸张样式 */
+        .resume-paper {
+          padding: ${Math.max(5, margin.value / 2)}px !important; /* 缩小内边距 */
+          font-size: ${fontSize.value === 'small' ? '14px' : fontSize.value === 'large' ? '20px' : '16px'} !important;
+          box-shadow: none !important;
+          width: 100% !important;
+          max-width: none !important;
+          height: auto !important;
+          background-color: white !important;
+          margin: 0 !important;
+          page-break-inside: avoid !important;
+        }
+      }
+    `;
+    document.head.appendChild(printStyle);
+
+    // 确保内容已渲染完成
+    setTimeout(() => {
+      console.log('PDF导出前检查:');
+      const resumePaper = document.querySelector('.resume-paper');
+      console.log('- resume-paper元素存在:', resumePaper !== null);
+      if (resumePaper) {
+        console.log('- resume-paper内容长度:', resumePaper.innerHTML.length);
+      }
+
+      // 方案1: 使用html2pdf.js库 (首选)
+      // 使用类型断言解决TypeScript类型检查问题
+      const html2pdfLib = window.html2pdf as any;
+      if (html2pdfLib) {
+        console.log('使用html2pdf.js库导出PDF');
+
+        if (resumePaper) {
+          // 配置导出选项
+          // 优化PDF布局配置
+          const opt = {
+            margin: Math.max(5, margin.value / 3), // 进一步缩小边距
+            filename: `${exportFileName.value}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2.5, logging: true, letterRendering: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+
+          // 生成PDF - 只导出resume-paper元素
+          html2pdfLib().set(opt).from(resumePaper).save();
+        } else {
+          console.error('未找到.resume-paper元素，回退到打印方案');
+          triggerPrintFallback(printStyle, exportFileName.value);
+        }
+      } else {
+        console.log('html2pdf.js库未加载，回退到打印方案');
+        triggerPrintFallback(printStyle, exportFileName.value);
+      }
+
+      // 移除打印样式
+      setTimeout(() => {
+        const styleElement = document.getElementById('print-style');
+        if (styleElement) {
+          document.head.removeChild(styleElement);
+        }
+      }, 2000);
+    }, 1000);
+    // 辅助函数: 打印方案回退
+    function triggerPrintFallback(styleElement: HTMLStyleElement, fileName: string) {
+      // 设置打印标题（文件名）
+      const originalTitle = document.title;
+      document.title = fileName;
+
+      // 强制重新布局
+      document.body.offsetHeight;
+
+      // 触发打印
+      window.print();
+
+      // 恢复原始标题
+      setTimeout(() => {
+        document.title = originalTitle;
+      }, 500);
+    }
+  } else if (exportFormat.value === 'html') {
+    // HTML导出功能
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${exportFileName.value}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+};
 
 // 分享链接状态
 const shareUrl = ref('');
 
-// 生成分享链接
+  // 生成分享链接
 const generateShareLink = () => {
   // 实际应用中应该调用API生成分享链接
   shareUrl.value = 'https://resumehelper.com/sf3t2e';
@@ -1364,5 +1616,8 @@ footer {
   border-top: 1px solid #eee;
   font-size: 15px;
   color: #999;
+}
+.resume-paper * {
+  font-size: inherit;
 }
 </style>

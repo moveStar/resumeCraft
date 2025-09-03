@@ -1,9 +1,9 @@
 <template>
   <div class="resume-editor">
     <header class="editor-header">
-      <h1>编辑您的简历</h1>
+      <h1>Edit Resume</h1>
       <div class="header-actions">
-        <button class="save-btn" @click="saveResume">保存并预览</button>
+        <button class="save-btn" @click="saveResume">sava&preview</button>
       </div>
     </header>
 
@@ -28,8 +28,23 @@
         <div v-if="activeSection === 'basic-info'" class="section-content">
           <h2>基本信息</h2>
           <form class="info-form">
+            <!-- 头像上传区域 -->
+            <div class="avatar-upload-container">
+              <div class="avatar-preview" :style="{ backgroundImage: resumeData.avatar ? 'url(' + resumeData.avatar + ')' : 'none' }">
+                <TUpload
+                  action="/api/upload"
+                  accept="image/*"
+                  :autoUpload="true"
+                  :showUploadList="false"
+                  @success="handleAvatarUpload"
+                >
+                  <t-icon name="cloud-upload" size="24" />
+                </TUpload>
+              </div>
+            </div>
+
             <div class="form-group">
-              <label>姓名</label>
+              <label>姓名<span class="required">*</span></label>
               <input v-model="resumeData.name" type="text" placeholder="请输入您的姓名" />
               <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
             </div>
@@ -38,8 +53,8 @@
                 <label>性别</label>
                 <select v-model="resumeData.gender">
                   <option value="">请选择</option>
-                  <option value="male">男</option>
-                  <option value="female">女</option>
+                  <option value="1">男</option>
+                  <option value="2">女</option>
                 </select>
               </div>
               <div class="form-group">
@@ -48,12 +63,12 @@
               </div>
             </div>
             <div class="form-group">
-              <label>手机号码</label>
+              <label>手机号码<span class="required">*</span></label>
               <input v-model="resumeData.phone" type="tel" placeholder="请输入您的手机号码" />
               <span v-if="errors.phone" class="error-message">{{ errors.phone }}</span>
             </div>
             <div class="form-group">
-              <label>邮箱</label>
+              <label>邮箱<span class="required">*</span></label>
               <input v-model="resumeData.email" type="email" placeholder="请输入您的邮箱地址" />
               <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
             </div>
@@ -131,19 +146,10 @@
                 <label>职位</label>
                 <input v-model="work.position" type="text" placeholder="请输入职位" />
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>开始时间</label>
-                  <input v-model="work.startDate" type="month" />
-                </div>
-                <div class="form-group">
-                  <label>结束时间</label>
-                  <input v-model="work.endDate" type="month" placeholder="至今" />
-                </div>
-              </div>
+              <div class="form-row">                <div class="form-group">                  <label>开始时间</label>                  <t-date-picker v-model="work.startDate" type="month" format="YYYY-MM" placeholder="选择开始时间" />                </div>                <div class="form-group">                  <label>结束时间</label>                  <div class="end-date-container">                    <t-date-picker v-model="work.endDate" type="month" format="YYYY-MM" placeholder="选择结束时间" :disabled="work.isCurrent" />                    <label class="current-checkbox">                      <input type="checkbox" v-model="work.isCurrent" /> 至今                    </label>                  </div>                </div>              </div>
               <div class="form-group">
                 <label>工作描述</label>
-                <textarea v-model="work.description" rows="4" placeholder="请描述您的工作内容和成就"></textarea>
+                <textarea v-model="work.descriptions" rows="4" placeholder="请描述您的工作内容和成就"></textarea>
               </div>
             </form>
           </div>
@@ -167,23 +173,14 @@
                 <label>角色</label>
                 <input v-model="project.role" type="text" placeholder="请输入您在项目中的角色" />
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>开始时间</label>
-                  <input v-model="project.startDate" type="month" />
-                </div>
-                <div class="form-group">
-                  <label>结束时间</label>
-                  <input v-model="project.endDate" type="month" />
-                </div>
-              </div>
+              <div class="form-row">                <div class="form-group">                  <label>开始时间</label>                  <t-date-picker v-model="project.startDate" type="month" format="YYYY-MM" placeholder="选择开始时间" />                </div>                <div class="form-group">                  <label>结束时间</label>                  <div class="end-date-container">                    <t-date-picker v-model="project.endDate" type="month" format="YYYY-MM" placeholder="选择结束时间" :disabled="project.isCurrent" />                    <label class="current-checkbox">                      <input type="checkbox" v-model="project.isCurrent" /> 至今                    </label>                  </div>                </div>              </div>
               <div class="form-group">
                 <label>项目描述</label>
                 <textarea v-model="project.description" rows="3" placeholder="请描述项目背景和目标"></textarea>
               </div>
               <div class="form-group">
                 <label>您的贡献</label>
-                <textarea v-model="project.contribution" rows="3" placeholder="请描述您在项目中的具体贡献" ></textarea>
+                <textarea v-model="project.achievements" rows="3" placeholder="请描述您在项目中的具体贡献" ></textarea>
               </div>
               <div class="form-group">
                 <label>技术栈</label>
@@ -207,10 +204,10 @@
                 <label>熟练度</label>
                 <select v-model="skill.level">
                   <option value="">请选择</option>
-                  <option value="beginner">入门</option>
-                  <option value="intermediate">中级</option>
-                  <option value="advanced">高级</option>
-                  <option value="expert">专家</option>
+                  <option value="1">入门</option>
+                  <option value="2">中级</option>
+                  <option value="3">高级</option>
+                  <option value="4">专家</option>
                 </select>
               </div>
               <div class="form-group" style="flex: 0 0 50px; display: flex; align-items: flex-end;">
@@ -238,10 +235,7 @@
                 <label>颁发机构</label>
                 <input v-model="cert.issuer" type="text" placeholder="请输入颁发机构" />
               </div>
-              <div class="form-group">
-                <label>获得日期</label>
-                <input v-model="cert.date" type="month" />
-              </div>
+              <div class="form-group">                <label>获得日期</label>                <t-date-picker v-model="cert.date" type="month" format="YYYY-MM" placeholder="选择获得日期" />              </div>
               <div class="form-group">
                 <label>证书描述</label>
                 <textarea v-model="cert.description" rows="2" placeholder="请描述证书的相关信息"></textarea>
@@ -257,41 +251,10 @@
 
 <script lang="ts">
 // 定义简历数据接口
-interface ResumeData {
-  name: string;
-  gender: string;
-  birthDate: string;
-  phone: string;
-  email: string;
-  location: string;
-  summary: string;
-  education: Array<{
-    school: string;
-    major: string;
-    startDate: string;
-    endDate: string;
-    degree: string;
-    description: string;
-  }>;
-  workExperience: Array<{
-    company: string;
-    position: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-  }>;
-  projects: Array<{
-    name: string;
-    role: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-    contribution: string;
-    techStack: string;
-  }>;
+interface ResumeData { avatar: string; name: string; title: string;  gender: number;  birthDate: string;  phone: string;  email: string;  location: string;  summary: string;  education: Array<{    school: string;    major: string;    startDate: string;    endDate: string;    degree: string;    description: string;  }>;  workExperience: Array<{    company: string;    position: string;    startDate: string;    endDate: string;    isCurrent: boolean;    descriptions: string[];  }>;  projects: Array<{    name: string;    role: string;    startDate: string;    endDate: string;    isCurrent: boolean;    description: string;    achievements: string[];    techStack: string[];  }>;
   skills: Array<{
     name: string;
-    level: string;
+    level: number;
   }>;
   certifications: Array<{
     name: string;
@@ -323,60 +286,108 @@ export default {
     resumeData: ResumeData;
     errors: Errors;
   } {
-    // 如果提供了initialData，则使用它初始化resumeData
     const defaultResumeData: ResumeData = {
-      name: '',
-      gender: '',
-      birthDate: '',
-      phone: '',
-      email: '',
-      location: '',
-      summary: '',
-      education: [
-        {
-          school: '',
-          major: '',
-          startDate: '',
-          endDate: '',
-          degree: '',
-          description: '',
-        },
-      ],
+      name: '张明远',
+      title: '高级全栈开发工程师',
+      avatar: '',
+      phone: '138 **** 5678',
+      birthDate: '1990-01-01',
+      gender: 1,
+      email: 'zhangmingyuan@email.com',
+      location: '上海市浦东新区',
+      summary: '5年全栈开发经验，精通React/Vue前端框架和Node.js后端开发，主导过3个百万级用户项目，擅长性能优化和团队协作。',
       workExperience: [
-        {
-          company: '',
-          position: '',
-          startDate: '',
-          endDate: '',
-          description: '',
-        },
+        {          position: '高级前端工程师',          company: '上海科技有限公司',          startDate: '2020-07',          endDate: '',          isCurrent: true,          descriptions: [            '负责公司核心产品用户增长系统的前端架构设计，使用React Hooks重构代码，性能提升40%',            '带领5人前端团队完成数据可视化平台开发，日活PV 50万+',            '引入Webpack 5优化构建流程，打包时间缩短65%'          ]        },        {          position: '前端开发工程师',          company: '北京互联网有限公司',          startDate: '2018-06',          endDate: '2020-06',          isCurrent: false,          descriptions: [            '参与电商平台前端开发，负责商品详情页和购物车模块',            '优化页面加载速度，Lighthouse评分从65提升至92',            '实现SSR方案，SEO效果提升300%'          ]        }
       ],
       projects: [
+        {          name: '数据可视化平台',          role: '技术负责人',          startDate: '2021-03',          endDate: '2022-01',          isCurrent: false,          description: '设计并开发了公司核心数据可视化平台，支持多维度数据展示和分析。',          achievements: [            '用户满意度提升45%',            '数据处理效率提升60%',            '减少决策时间30%'          ],          techStack: ['React', 'TypeScript', 'D3.js', 'Node.js', 'MongoDB']        },        {          name: '电商移动端网站',          role: '前端开发',          startDate: '2019-05',          endDate: '2020-02',          isCurrent: false,          description: '负责电商平台移动端网站的开发和优化，提升移动端用户体验。',          achievements: [            '移动端转化率提升25%',            '页面加载速度提升50%',            '用户停留时间增加35%'          ],          techStack: ['Vue', 'JavaScript', 'Webpack', 'Sass', 'FastAPI']        }
+      ],
+      education: [
         {
-          name: '',
-          role: '',
-          startDate: '',
-          endDate: '',
-          description: '',
-          contribution: '',
-          techStack: '',
-        },
+          "school": "北京师范大学",
+          "major": "汉语言文学",
+          "degree": "bachelor",
+          "startDate": "2022-09",
+          "endDate": "2025-06",
+          "description": "GPA4.5"
+        }
       ],
       skills: [
-        {
-          name: '',
-          level: '',
-        },
-      ],
+            { name: 'React', level: 1 },
+            { name: 'Vue', level: 3 },
+            { name: 'TypeScript', level: 2 },
+            { name: 'HTML/CSS', level: 4 }
+               ],
       certifications: [
         {
-          name: '',
-          issuer: '',
-          date: '',
-          description: '',
+          name: 'AWS认证解决方案架构师',
+          issuer: '亚马逊AWS',
+          date: '2022-06',
+          description: '验证了在设计和部署AWS云基础设施方面的专业知识和技能。'
         },
+        {
+          name: 'React高级开发者认证',
+          issuer: 'React官方',
+          date: '2021-03',
+          description: '验证了在React应用开发和优化方面的高级技能。'
+        }
       ],
-    };
+      lastUpdated: '2023-11-15 14:30'
+    }
+    // 如果提供了initialData，则使用它初始化resumeData
+    // const defaultResumeData: ResumeData = {
+    //   name: '',
+    //   gender: '',
+    //   birthDate: '',
+    //   phone: '',
+    //   email: '',
+    //   location: '',
+    //   summary: '',
+    //   education: [
+    //     {
+    //       school: '',
+    //       major: '',
+    //       startDate: '',
+    //       endDate: '',
+    //       degree: '',
+    //       description: '',
+    //     },
+    //   ],
+    //   workExperience: [
+    //     {
+    //       company: '',
+    //       position: '',
+    //       startDate: '',
+    //       endDate: '',
+    //       description: '',
+    //     },
+    //   ],
+    //   projects: [
+    //     {
+    //       name: '',
+    //       role: '',
+    //       startDate: '',
+    //       endDate: '',
+    //       description: '',
+    //       contribution: '',
+    //       techStack: '',
+    //     },
+    //   ],
+    //   skills: [
+    //     {
+    //       name: '',
+    //       level: '',
+    //     },
+    //   ],
+    //   certifications: [
+    //     {
+    //       name: '',
+    //       issuer: '',
+    //       date: '',
+    //       description: '',
+    //     },
+    //   ],
+    // };
     
     // 合并initialData和默认值，并进行类型断言
     const initialResumeData = { ...defaultResumeData, ...this.initialData } as ResumeData;
@@ -396,6 +407,16 @@ export default {
     };
   },
   methods: {
+    // 处理头像上传
+    handleAvatarUpload(response) {
+      // 这里只是模拟上传成功，实际项目中需要调用后端API
+      if (response && response.file) {
+        this.resumeData.avatar = URL.createObjectURL(response.file);
+      } else if (response && response.files && response.files.length > 0) {
+        this.resumeData.avatar = URL.createObjectURL(response.files[0]);
+      }
+    },
+
     // 表单验证方法
     validateForm(): boolean {
       const errors: Errors = {};
@@ -437,20 +458,30 @@ export default {
     
     saveResume() {
       // 先验证表单
-      if (!this.validateForm()) {
-        // 如果验证失败，切换到基本信息标签
-        this.activeSection = 'basic-info';
-        return;
+      // if (!this.validateForm()) {
+      //   // 如果验证失败，切换到基本信息标签
+      //   this.activeSection = 'basic-info';
+      //   return;
+      // }
+      
+      // 格式化证书日期
+      if (this.resumeData.certifications && this.resumeData.certifications.length > 0) {
+        this.resumeData.certifications = this.resumeData.certifications.map(cert => ({
+          ...cert,
+          date: this.formatDate(cert.date)
+        }));
       }
-
+      
       // 保存简历的逻辑
       console.log('保存简历:', this.resumeData);
       // 可以将数据保存到localStorage或发送到服务器
       localStorage.setItem('resumeData', JSON.stringify(this.resumeData));
       // 向父组件发射事件，传递简历数据
       this.$emit('saveResume', this.resumeData);
-      // 跳转到预览页面
-      this.$router.push({ name: 'preview', query: { resumeData: JSON.stringify(this.resumeData) } });
+      // 将简历数据转为JSON字符串并编码，以便在URL中传递
+      const encodedData = encodeURIComponent(JSON.stringify(this.resumeData));
+      // 跳转到预览页面，并传递简历数据
+      this.$router.push({ name: 'preview', query: { resumeData: encodedData } });
     },
 
     // 教育背景相关方法
@@ -479,7 +510,8 @@ export default {
         position: '',
         startDate: '',
         endDate: '',
-        description: '',
+        isCurrent: false,
+        descriptions: [''],
       });
     },
     removeWorkExperience(index: number) {
@@ -497,9 +529,10 @@ export default {
         role: '',
         startDate: '',
         endDate: '',
+        isCurrent: false,
         description: '',
-        contribution: '',
-        techStack: '',
+        achievements: [''],
+        techStack: [],
       });
     },
     removeProject(index: number) {
@@ -514,7 +547,7 @@ export default {
     addSkill() {
       this.resumeData.skills.push({
         name: '',
-        level: '',
+        level: 50,
       });
     },
     removeSkill(index: number) {
@@ -530,9 +563,35 @@ export default {
       this.resumeData.certifications.push({
         name: '',
         issuer: '',
-        date: '',
+        date: '', // 格式将由t-date-picker组件自动处理为YYYY-MM
         description: '',
       });
+    },
+    
+    // 格式化日期，与预览组件保持一致
+    formatDate(dateString: string): string {
+      // 检查是否为空
+      if (!dateString) return '';
+      
+      // 检查是否已经是YYYY-MM格式
+      if (/^\d{4}-\d{2}$/.test(dateString)) {
+        return dateString;
+      }
+      
+      // 对于其他格式，尝试转换为YYYY-MM格式
+      try {
+        const date = new Date(dateString);
+        if (!isNaN(date.getTime())) {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          return `${year}-${month}`;
+        }
+      } catch (e) {
+        console.error('日期格式化错误:', e);
+      }
+      
+      // 如果所有尝试都失败，返回原始字符串
+      return dateString;
     },
     removeCertification(index: number) {
       if (this.resumeData.certifications.length > 1) {
@@ -577,16 +636,50 @@ export default {
   gap: 1rem;
 }
 
+.avatar-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px dashed #d0d0d0;
+  border-radius: 8px;
+}
+
+.avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 2px solid #e0e0e0;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.avatar-hint {
+  color: #666;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.required {
+  color: #f53f3f;
+  margin-left: 4px;
+}
+
 .save-btn {
-  padding: 0.6rem 1.2rem;
+  background-color: #3b82f6;
+  color: white;
   border: none;
-  border-radius: 6px;
+  padding: 8px 16px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 500;
-  background-color: #fff;
-  color: #4c7aff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  margin-left: 10px;
 }
 
 .save-btn:hover {
